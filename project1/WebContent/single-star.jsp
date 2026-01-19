@@ -8,6 +8,8 @@
     <title>Star Details</title>
 </head>
 <body>
+<a href="index.jsp">Home</a>
+<br>
 <a href="movie-list">Back to Movie List</a>
 
 <%

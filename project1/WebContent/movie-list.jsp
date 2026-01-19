@@ -12,6 +12,7 @@
     </style>
 </head>
 <body>
+<a href="index.jsp">Home</a>
 <h1>Top 20 Rated Movies</h1>
 <table>
     <tr>
