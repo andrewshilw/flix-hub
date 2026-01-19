@@ -15,9 +15,16 @@ public class SingleMovieServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
-        String loginUser = "root";
-        String loginPasswd = "Tghdfj123!"; // CHANGE THIS
-        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+//        String loginUser = "root";
+//        String loginPasswd = "Tghdfj123!"; // CHANGE THIS
+//        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+        String loginUser = "mytestuser";
+        String loginPasswd = "My6$Password";
+        String loginUrl =
+                "jdbc:mysql://localhost:3306/moviedb" +
+                        "?useSSL=false" +
+                        "&allowPublicKeyRetrieval=true" +
+                        "&serverTimezone=UTC";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

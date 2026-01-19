@@ -16,9 +16,16 @@ public class MovieListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String loginUser = "root";
-        String loginPasswd = "Tghdfj123!"; // Your password
-        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+//        String loginUser = "root";
+//        String loginPasswd = "Tghdfj123!"; // Your password
+//        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
+        String loginUser = "mytestuser";
+        String loginPasswd = "My6$Password";
+        String loginUrl =
+                "jdbc:mysql://localhost:3306/moviedb" +
+                        "?useSSL=false" +
+                        "&allowPublicKeyRetrieval=true" +
+                        "&serverTimezone=UTC";
 
         List<Movie> movieList = new ArrayList<>();
 
