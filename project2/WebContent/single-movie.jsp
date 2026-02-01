@@ -6,12 +6,26 @@
     <title>Movie Details</title>
 </head>
 <body>
-<form action="logout" method="post" style="float:right;">
+<form action="logout" method="post" style="float:right; margin-left:8px;">
     <button type="submit">Logout</button>
+</form>
+<form action="shopping-cart" method="get" style="float:right;">
+    <button type="submit">Checkout</button>
 </form>
 <%@ page import="java.net.URLEncoder" %>
 <a href="<%= request.getContextPath() %>/">Home</a>
 <br>
+<%
+    String cartMessage = (String) session.getAttribute("cartMessage");
+    String cartMessageType = (String) session.getAttribute("cartMessageType");
+    if (cartMessage != null) {
+        session.removeAttribute("cartMessage");
+        session.removeAttribute("cartMessageType");
+    }
+%>
+<% if (cartMessage != null) { %>
+<p style="color:<%= "error".equals(cartMessageType) ? "red" : "green" %>;"><%= cartMessage %></p>
+<% } %>
 <%
     String backToListUrl = (String) request.getAttribute("backToListUrl");
     if (backToListUrl == null || backToListUrl.isBlank()) {
@@ -27,6 +41,10 @@
 <h1><%= m.getTitle() %> (<%= m.getYear() %>)</h1>
 <p><strong>Director:</strong> <%= m.getDirector() %></p>
 <p><strong>Rating:</strong> <%= m.getRating() != null ? m.getRating() : "N/A" %></p>
+<form action="add-to-cart" method="post">
+    <input type="hidden" name="movieId" value="<%= m.getId() %>">
+    <button type="submit">Add to Shopping Cart</button>
+</form>
 <p><strong>Genres:</strong>
     <%
         if (m.getGenres() != null && !m.getGenres().isEmpty()) {

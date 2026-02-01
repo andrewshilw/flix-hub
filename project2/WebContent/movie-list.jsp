@@ -13,8 +13,11 @@
     </style>
 </head>
 <body>
-<form action="logout" method="post" style="float:right;">
+<form action="logout" method="post" style="float:right; margin-left:8px;">
     <button type="submit">Logout</button>
+</form>
+<form action="shopping-cart" method="get" style="float:right;">
+    <button type="submit">Checkout</button>
 </form>
 <a href="<%= request.getContextPath() %>/">Home</a>
 <%
@@ -35,7 +38,16 @@
     if (pageSize == null) pageSize = 10;
     if (totalCount == null) totalCount = 0;
     int totalPages = (int) Math.ceil(totalCount / (double) pageSize);
+    String cartMessage = (String) session.getAttribute("cartMessage");
+    String cartMessageType = (String) session.getAttribute("cartMessageType");
+    if (cartMessage != null) {
+        session.removeAttribute("cartMessage");
+        session.removeAttribute("cartMessageType");
+    }
 %>
+<% if (cartMessage != null) { %>
+<p style="color:<%= "error".equals(cartMessageType) ? "red" : "green" %>;"><%= cartMessage %></p>
+<% } %>
 <h1><%= pageTitle != null ? pageTitle : "Movie List" %></h1>
 <% if (criteriaDescription != null) { %>
 <p><strong>Filters:</strong> <%= criteriaDescription %></p>
@@ -63,6 +75,7 @@
         <label>Per Page:
             <select name="pageSize">
                 <option value="10" <%= pageSize == 10 ? "selected" : "" %>>10</option>
+                <option value="20" <%= pageSize == 20 ? "selected" : "" %>>20</option>
                 <option value="25" <%= pageSize == 25 ? "selected" : "" %>>25</option>
                 <option value="50" <%= pageSize == 50 ? "selected" : "" %>>50</option>
                 <option value="100" <%= pageSize == 100 ? "selected" : "" %>>100</option>
@@ -101,6 +114,7 @@
         <th>Genres</th>
         <th>Stars</th>
         <th>Rating</th>
+        <th>Cart</th>
     </tr>
     <%
         List<Movie> movies = (List<Movie>) request.getAttribute("movieList");
@@ -140,6 +154,12 @@
             %>
         </td>
         <td><%= m.getRating() %></td>
+        <td>
+            <form action="add-to-cart" method="post">
+                <input type="hidden" name="movieId" value="<%= m.getId() %>">
+                <button type="submit">Add to Shopping Cart</button>
+            </form>
+        </td>
     </tr>
     <%
             }

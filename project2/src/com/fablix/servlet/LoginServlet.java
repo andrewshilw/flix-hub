@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
-                String query = "SELECT password FROM customers WHERE email = ?";
+                String query = "SELECT id, password FROM customers WHERE email = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, email);
                     try (ResultSet rs = statement.executeQuery()) {
@@ -52,15 +52,18 @@ public class LoginServlet extends HttpServlet {
                             request.getRequestDispatcher("login.jsp").forward(request, response);
                             return;
                         }
+
+                        int customerId = rs.getInt("id");
+                        HttpSession session = request.getSession(true);
+                        session.setAttribute("customerEmail", email);
+                        session.setAttribute("customerId", customerId);
+                        response.sendRedirect(request.getContextPath() + "/");
+                        return;
                     }
                 }
             }
         } catch (Exception e) {
             throw new ServletException(e);
         }
-
-        HttpSession session = request.getSession(true);
-        session.setAttribute("customerEmail", email);
-        response.sendRedirect(request.getContextPath() + "/");
     }
 }

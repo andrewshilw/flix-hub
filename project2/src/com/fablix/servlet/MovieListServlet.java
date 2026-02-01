@@ -26,15 +26,36 @@ public class MovieListServlet extends HttpServlet {
         String titlePrefix = trimToNull(request.getParameter("titlePrefix"));
         String sortField = trimToNull(request.getParameter("sort"));
         String sortOrder = trimToNull(request.getParameter("order"));
+        String pageSizeParam = request.getParameter("pageSize");
 
         int page = parseIntParam(request.getParameter("page"), 1);
-        int pageSize = parseIntParam(request.getParameter("pageSize"), 10);
+        int pageSize = parseIntParam(pageSizeParam, 10);
         if (page < 1) {
             page = 1;
         }
-        if (pageSize != 10 && pageSize != 25 && pageSize != 50 && pageSize != 100) {
+        if (pageSize != 10 && pageSize != 20 && pageSize != 25 && pageSize != 50 && pageSize != 100) {
             pageSize = 10;
         }
+
+        boolean hasSearchParams = title != null || year != null || director != null || star != null;
+        boolean hasBrowseParams = genre != null || titlePrefix != null;
+        boolean hasFilters = hasSearchParams || hasBrowseParams;
+        boolean sortProvided = sortField != null;
+        boolean orderProvided = sortOrder != null;
+        boolean pageSizeProvided = pageSizeParam != null && !pageSizeParam.isBlank();
+
+        if (!hasFilters) {
+            if (!sortProvided) {
+                sortField = "rating";
+            }
+            if (!orderProvided) {
+                sortOrder = "desc";
+            }
+            if (!pageSizeProvided) {
+                pageSize = 20;
+            }
+        }
+
         if (!"rating".equalsIgnoreCase(sortField)) {
             sortField = "title";
         } else {
@@ -45,10 +66,6 @@ public class MovieListServlet extends HttpServlet {
         } else {
             sortOrder = "desc";
         }
-
-        boolean hasSearchParams = title != null || year != null || director != null || star != null;
-        boolean hasBrowseParams = genre != null || titlePrefix != null;
-        boolean hasFilters = hasSearchParams || hasBrowseParams;
 
         List<Movie> movieList = new ArrayList<>();
         int totalCount = 0;

@@ -8,8 +8,11 @@
     <title>Star Details</title>
 </head>
 <body>
-<form action="logout" method="post" style="float:right;">
+<form action="logout" method="post" style="float:right; margin-left:8px;">
     <button type="submit">Logout</button>
+</form>
+<form action="shopping-cart" method="get" style="float:right;">
+    <button type="submit">Checkout</button>
 </form>
 <a href="<%= request.getContextPath() %>/">Home</a>
 <br>

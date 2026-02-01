@@ -19,8 +19,11 @@
     </style>
 </head>
 <body>
-<form action="logout" method="post" style="float:right;">
+<form action="logout" method="post" style="float:right; margin-left:8px;">
     <button type="submit">Logout</button>
+</form>
+<form action="shopping-cart" method="get" style="float:right;">
+    <button type="submit">Checkout</button>
 </form>
 <h1>Fablix Main Page</h1>
 <p><a href="movie-list">Top 20 Rated Movies</a></p>
