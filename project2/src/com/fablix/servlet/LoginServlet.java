@@ -13,6 +13,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.fablix.util.DbConfig;
+
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -31,17 +33,9 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        String loginUser = "mytestuser";
-        String loginPasswd = "My6$Password";
-        String loginUrl =
-                "jdbc:mysql://localhost:3306/moviedb" +
-                        "?useSSL=false" +
-                        "&allowPublicKeyRetrieval=true" +
-                        "&serverTimezone=UTC";
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)) {
+            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
                 String query = "SELECT password FROM customers WHERE email = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, email);

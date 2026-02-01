@@ -1,6 +1,7 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Movie;
+import com.fablix.util.DbConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,32 +16,23 @@ public class SingleMovieServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
-//        String loginUser = "root";
-//        String loginPasswd = "Tghdfj123!"; // CHANGE THIS
-//        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
-        String loginUser = "mytestuser";
-        String loginPasswd = "My6$Password";
-        String loginUrl =
-                "jdbc:mysql://localhost:3306/moviedb" +
-                        "?useSSL=false" +
-                        "&allowPublicKeyRetrieval=true" +
-                        "&serverTimezone=UTC";
-
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)) {
+            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
 
                 // Query to get details for ONE movie by ID
                 String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                         "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') as genres, " +
-                        "GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') as stars, " +
-                        "GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') as starIds " +
+                        "GROUP_CONCAT(DISTINCT s.name ORDER BY sc.movieCount DESC, s.name ASC SEPARATOR ',') as stars, " +
+                        "GROUP_CONCAT(DISTINCT s.id ORDER BY sc.movieCount DESC, s.name ASC SEPARATOR ',') as starIds " +
                         "FROM movies m " +
                         "LEFT JOIN ratings r ON m.id = r.movieId " +
                         "LEFT JOIN genres_in_movies gm ON m.id = gm.movieId " +
                         "LEFT JOIN genres g ON gm.genreId = g.id " +
                         "LEFT JOIN stars_in_movies sm ON m.id = sm.movieId " +
                         "LEFT JOIN stars s ON sm.starId = s.id " +
+                        "LEFT JOIN (SELECT starId, COUNT(*) AS movieCount FROM stars_in_movies GROUP BY starId) sc " +
+                        "ON s.id = sc.starId " +
                         "WHERE m.id = ? " +
                         "GROUP BY m.id, m.title, m.year, m.director, r.rating";
 
@@ -66,6 +58,8 @@ public class SingleMovieServlet extends HttpServlet {
             e.printStackTrace();
         }
 
+        String backToListUrl = (String) request.getSession().getAttribute("lastMovieListUrl");
+        request.setAttribute("backToListUrl", backToListUrl);
         request.getRequestDispatcher("single-movie.jsp").forward(request, response);
     }
 }

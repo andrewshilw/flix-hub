@@ -11,9 +11,15 @@
 <form action="logout" method="post" style="float:right;">
     <button type="submit">Logout</button>
 </form>
-<a href="index.jsp">Home</a>
+<a href="<%= request.getContextPath() %>/">Home</a>
 <br>
-<a href="movie-list">Back to Movie List</a>
+<%
+    String backToListUrl = (String) request.getAttribute("backToListUrl");
+    if (backToListUrl == null || backToListUrl.isBlank()) {
+        backToListUrl = request.getContextPath() + "/movie-list";
+    }
+%>
+<a href="<%= backToListUrl %>">Back to Movie List</a>
 
 <%
     Star star = (Star) request.getAttribute("star");

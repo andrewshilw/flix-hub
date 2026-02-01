@@ -1,6 +1,7 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Star;
+import com.fablix.util.DbConfig;
 import com.fablix.model.Movie;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,23 +19,12 @@ public class SingleStarServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String starId = request.getParameter("id");
-//        String loginUser = "root";
-//        String loginPasswd = "Tghdfj123!"; // CHANGE THIS
-//        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
-        String loginUser = "mytestuser";
-        String loginPasswd = "My6$Password";
-        String loginUrl =
-                "jdbc:mysql://localhost:3306/moviedb" +
-                        "?useSSL=false" +
-                        "&allowPublicKeyRetrieval=true" +
-                        "&serverTimezone=UTC";
-
         Star star = null;
         List<Movie> moviesActedIn = new ArrayList<>();
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(loginUrl, loginUser, loginPasswd)) {
+            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
 
                 // 1. Get Star Info
                 String starQuery = "SELECT * FROM stars WHERE id = ?";
@@ -55,7 +45,7 @@ public class SingleStarServlet extends HttpServlet {
                         "FROM movies m " +
                         "JOIN stars_in_movies sm ON m.id = sm.movieId " +
                         "WHERE sm.starId = ? " +
-                        "ORDER BY m.year DESC";
+                        "ORDER BY m.year DESC, m.title ASC";
 
                 PreparedStatement movieStmt = conn.prepareStatement(movieQuery);
                 movieStmt.setString(1, starId);
@@ -80,6 +70,8 @@ public class SingleStarServlet extends HttpServlet {
 
         request.setAttribute("star", star);
         request.setAttribute("movies", moviesActedIn);
+        String backToListUrl = (String) request.getSession().getAttribute("lastMovieListUrl");
+        request.setAttribute("backToListUrl", backToListUrl);
         request.getRequestDispatcher("single-star.jsp").forward(request, response);
     }
 }

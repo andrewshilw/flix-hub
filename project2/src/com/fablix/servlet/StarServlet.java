@@ -11,24 +11,14 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import com.fablix.util.DbConfig;
+
 // This annotation maps this Java Servlet Class to a URL
 @WebServlet("/stars")
 public class StarServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Change this to your own mysql username and password
-//        String loginUser = "root";
-//        String loginPasswd = "Tghdfj123!";
-//        String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
-        String loginUser = "mytestuser";
-        String loginPasswd = "My6$Password";
-        String loginUrl =
-                "jdbc:mysql://localhost:3306/moviedb" +
-                        "?useSSL=false" +
-                        "&allowPublicKeyRetrieval=true" +
-                        "&serverTimezone=UTC";
-
         // Set response mime type
         response.setContentType("text/html");
 
@@ -41,7 +31,7 @@ public class StarServlet extends HttpServlet {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             // create database connection
-            Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+            Connection connection = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
             // declare statement
             Statement statement = connection.createStatement();
             // prepare query
