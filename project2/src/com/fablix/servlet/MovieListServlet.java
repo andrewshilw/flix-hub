@@ -26,6 +26,10 @@ public class MovieListServlet extends HttpServlet {
         String titlePrefix = trimToNull(request.getParameter("titlePrefix"));
         String sortField = trimToNull(request.getParameter("sort"));
         String sortOrder = trimToNull(request.getParameter("order"));
+        String sortField1 = trimToNull(request.getParameter("sort1"));
+        String sortOrder1 = trimToNull(request.getParameter("order1"));
+        String sortField2 = trimToNull(request.getParameter("sort2"));
+        String sortOrder2 = trimToNull(request.getParameter("order2"));
         String pageSizeParam = request.getParameter("pageSize");
 
         int page = parseIntParam(request.getParameter("page"), 1);
@@ -40,31 +44,56 @@ public class MovieListServlet extends HttpServlet {
         boolean hasSearchParams = title != null || year != null || director != null || star != null;
         boolean hasBrowseParams = genre != null || titlePrefix != null;
         boolean hasFilters = hasSearchParams || hasBrowseParams;
-        boolean sortProvided = sortField != null;
-        boolean orderProvided = sortOrder != null;
+        boolean sortProvided = sortField != null || sortField1 != null;
+        boolean orderProvided = sortOrder != null || sortOrder1 != null;
         boolean pageSizeProvided = pageSizeParam != null && !pageSizeParam.isBlank();
 
         if (!hasFilters) {
             if (!sortProvided) {
-                sortField = "rating";
+                sortField1 = "rating";
             }
             if (!orderProvided) {
-                sortOrder = "desc";
+                sortOrder1 = "desc";
             }
             if (!pageSizeProvided) {
                 pageSize = 20;
             }
         }
 
-        if (!"rating".equalsIgnoreCase(sortField)) {
-            sortField = "title";
-        } else {
-            sortField = "rating";
+        if (sortField1 == null) {
+            sortField1 = sortField;
         }
-        if (!"desc".equalsIgnoreCase(sortOrder)) {
-            sortOrder = "asc";
+        if (sortOrder1 == null) {
+            sortOrder1 = sortOrder;
+        }
+
+        if (!"rating".equalsIgnoreCase(sortField1)) {
+            sortField1 = "title";
         } else {
-            sortOrder = "desc";
+            sortField1 = "rating";
+        }
+        if (!"desc".equalsIgnoreCase(sortOrder1)) {
+            sortOrder1 = "asc";
+        } else {
+            sortOrder1 = "desc";
+        }
+
+        if (sortField2 == null) {
+            sortField2 = "rating".equals(sortField1) ? "title" : "rating";
+        }
+        if (!"rating".equalsIgnoreCase(sortField2)) {
+            sortField2 = "title";
+        } else {
+            sortField2 = "rating";
+        }
+        if (sortField2.equals(sortField1)) {
+            sortField2 = "rating".equals(sortField1) ? "title" : "rating";
+        }
+
+        if (!"desc".equalsIgnoreCase(sortOrder2)) {
+            sortOrder2 = "asc";
+        } else {
+            sortOrder2 = "desc";
         }
 
         List<Movie> movieList = new ArrayList<>();
@@ -126,11 +155,11 @@ public class MovieListServlet extends HttpServlet {
 
                 query.append("GROUP BY m.id, m.title, m.year, m.director, r.rating ");
 
-                if ("rating".equals(sortField)) {
-                    query.append("ORDER BY r.rating ").append(sortOrder).append(", m.title ").append(sortOrder).append(" ");
-                } else {
-                    query.append("ORDER BY m.title ").append(sortOrder).append(", r.rating ").append(sortOrder).append(" ");
-                }
+                String firstField = "rating".equals(sortField1) ? "r.rating" : "m.title";
+                String secondField = "rating".equals(sortField2) ? "r.rating" : "m.title";
+                query.append("ORDER BY ")
+                        .append(firstField).append(" ").append(sortOrder1).append(", ")
+                        .append(secondField).append(" ").append(sortOrder2).append(" ");
                 query.append("LIMIT ? OFFSET ? ");
 
                 PreparedStatement statement = conn.prepareStatement(query.toString());
@@ -197,8 +226,10 @@ public class MovieListServlet extends HttpServlet {
                 buildCriteriaDescription(title, year, director, star, genre, titlePrefix));
         request.setAttribute("page", page);
         request.setAttribute("pageSize", pageSize);
-        request.setAttribute("sortField", sortField);
-        request.setAttribute("sortOrder", sortOrder);
+        request.setAttribute("sortField1", sortField1);
+        request.setAttribute("sortOrder1", sortOrder1);
+        request.setAttribute("sortField2", sortField2);
+        request.setAttribute("sortOrder2", sortOrder2);
         request.setAttribute("totalCount", totalCount);
         request.setAttribute("title", title);
         request.setAttribute("year", year);

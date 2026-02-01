@@ -26,8 +26,10 @@
     Integer pageNum = (Integer) request.getAttribute("page");
     Integer pageSize = (Integer) request.getAttribute("pageSize");
     Integer totalCount = (Integer) request.getAttribute("totalCount");
-    String sortField = (String) request.getAttribute("sortField");
-    String sortOrder = (String) request.getAttribute("sortOrder");
+    String sortField1 = (String) request.getAttribute("sortField1");
+    String sortOrder1 = (String) request.getAttribute("sortOrder1");
+    String sortField2 = (String) request.getAttribute("sortField2");
+    String sortOrder2 = (String) request.getAttribute("sortOrder2");
     String titleParam = (String) request.getAttribute("title");
     String yearParam = (String) request.getAttribute("year");
     String directorParam = (String) request.getAttribute("director");
@@ -60,16 +62,28 @@
         <% if (starParam != null) { %><input type="hidden" name="star" value="<%= starParam %>"><% } %>
         <% if (genreParam != null) { %><input type="hidden" name="genre" value="<%= genreParam %>"><% } %>
         <% if (titlePrefixParam != null) { %><input type="hidden" name="titlePrefix" value="<%= titlePrefixParam %>"><% } %>
-        <label>Sort:
-            <select name="sort">
-                <option value="title" <%= "title".equals(sortField) ? "selected" : "" %>>Title</option>
-                <option value="rating" <%= "rating".equals(sortField) ? "selected" : "" %>>Rating</option>
+        <label>Primary Sort:
+            <select name="sort1">
+                <option value="rating" <%= "rating".equals(sortField1) ? "selected" : "" %>>Rating</option>
+                <option value="title" <%= "title".equals(sortField1) ? "selected" : "" %>>Title</option>
             </select>
         </label>
         <label>Order:
-            <select name="order">
-                <option value="asc" <%= "asc".equals(sortOrder) ? "selected" : "" %>>Ascending</option>
-                <option value="desc" <%= "desc".equals(sortOrder) ? "selected" : "" %>>Descending</option>
+            <select name="order1">
+                <option value="asc" <%= "asc".equals(sortOrder1) ? "selected" : "" %>>Ascending</option>
+                <option value="desc" <%= "desc".equals(sortOrder1) ? "selected" : "" %>>Descending</option>
+            </select>
+        </label>
+        <label>Secondary Sort:
+            <select name="sort2">
+                <option value="rating" <%= "rating".equals(sortField2) ? "selected" : "" %>>Rating</option>
+                <option value="title" <%= "title".equals(sortField2) ? "selected" : "" %>>Title</option>
+            </select>
+        </label>
+        <label>Order:
+            <select name="order2">
+                <option value="asc" <%= "asc".equals(sortOrder2) ? "selected" : "" %>>Ascending</option>
+                <option value="desc" <%= "desc".equals(sortOrder2) ? "selected" : "" %>>Descending</option>
             </select>
         </label>
         <label>Per Page:
@@ -94,8 +108,10 @@
         if (starParam != null) baseQuery += "&star=" + URLEncoder.encode(starParam, "UTF-8");
         if (genreParam != null) baseQuery += "&genre=" + URLEncoder.encode(genreParam, "UTF-8");
         if (titlePrefixParam != null) baseQuery += "&titlePrefix=" + URLEncoder.encode(titlePrefixParam, "UTF-8");
-        baseQuery += "&sort=" + URLEncoder.encode(sortField, "UTF-8");
-        baseQuery += "&order=" + URLEncoder.encode(sortOrder, "UTF-8");
+        baseQuery += "&sort1=" + URLEncoder.encode(sortField1, "UTF-8");
+        baseQuery += "&order1=" + URLEncoder.encode(sortOrder1, "UTF-8");
+        baseQuery += "&sort2=" + URLEncoder.encode(sortField2, "UTF-8");
+        baseQuery += "&order2=" + URLEncoder.encode(sortOrder2, "UTF-8");
         baseQuery += "&pageSize=" + pageSize;
     %>
     <% if (pageNum > 1) { %>

@@ -1,8 +1,8 @@
 package com.fablix.util;
 
 public final class DbConfig {
-    // public static final String USER = "root";
-    // public static final String PASSWORD = "Tghdfj123!";
+//    public static final String USER = "root";
+//    public static final String PASSWORD = "Tghdfj123!";
     public static final String USER = "mytestuser";
     public static final String PASSWORD = "My6$Password";
     public static final String URL =
