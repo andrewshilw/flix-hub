@@ -5,7 +5,7 @@
 - Member: Andrew Shi (full contribution)
 
 ## Project 2
-- Demo video: [to be added]
+- Demo video: https://drive.google.com/file/d/1oZt3azQpJqjajToQRAIQBIDSFnS2SACq/view?usp=sharing
 - Member: Andrew Shi (full contribution)
 
 ### Project 2 Notes
