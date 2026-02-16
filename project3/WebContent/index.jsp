@@ -29,6 +29,14 @@
 <p><a href="movie-list">Top 20 Rated Movies</a></p>
 
 <div class="section">
+    <h2>Main Search</h2>
+    <form action="movie-list" method="get">
+        <label>Search Title (full-text): <input type="text" name="query" placeholder="e.g. good u"></label>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<div class="section">
     <h2>Search Movies</h2>
     <form action="movie-list" method="get">
         <label>Title: <input type="text" name="title"></label><br>

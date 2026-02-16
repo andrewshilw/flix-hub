@@ -18,6 +18,8 @@ public class MovieListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String fulltextRawQuery = trimToNull(request.getParameter("query"));
+        String fulltextBooleanQuery = buildBooleanPrefixQuery(fulltextRawQuery);
         String title = trimToNull(request.getParameter("title"));
         String year = trimToNull(request.getParameter("year"));
         String director = trimToNull(request.getParameter("director"));
@@ -41,7 +43,7 @@ public class MovieListServlet extends HttpServlet {
             pageSize = 10;
         }
 
-        boolean hasSearchParams = title != null || year != null || director != null || star != null;
+        boolean hasSearchParams = fulltextBooleanQuery != null || title != null || year != null || director != null || star != null;
         boolean hasBrowseParams = genre != null || titlePrefix != null;
         boolean hasFilters = hasSearchParams || hasBrowseParams;
         boolean sortProvided = sortField != null || sortField1 != null;
@@ -120,6 +122,10 @@ public class MovieListServlet extends HttpServlet {
                 List<String> conditions = new ArrayList<>();
                 List<Object> params = new ArrayList<>();
 
+                if (fulltextBooleanQuery != null) {
+                    conditions.add("MATCH(m.title) AGAINST (? IN BOOLEAN MODE)");
+                    params.add(fulltextBooleanQuery);
+                }
                 if (title != null) {
                     conditions.add("m.title LIKE ?");
                     params.add("%" + title + "%");
@@ -223,7 +229,7 @@ public class MovieListServlet extends HttpServlet {
         request.setAttribute("movieList", movieList);
         request.setAttribute("pageTitle", buildPageTitle(hasFilters, hasSearchParams, hasBrowseParams));
         request.setAttribute("criteriaDescription",
-                buildCriteriaDescription(title, year, director, star, genre, titlePrefix));
+                buildCriteriaDescription(fulltextRawQuery, title, year, director, star, genre, titlePrefix));
         request.setAttribute("page", page);
         request.setAttribute("pageSize", pageSize);
         request.setAttribute("sortField1", sortField1);
@@ -232,6 +238,7 @@ public class MovieListServlet extends HttpServlet {
         request.setAttribute("sortOrder2", sortOrder2);
         request.setAttribute("totalCount", totalCount);
         request.setAttribute("title", title);
+        request.setAttribute("query", fulltextRawQuery);
         request.setAttribute("year", year);
         request.setAttribute("director", director);
         request.setAttribute("star", star);
@@ -261,9 +268,12 @@ public class MovieListServlet extends HttpServlet {
         return "Browse Results";
     }
 
-    private String buildCriteriaDescription(String title, String year, String director, String star,
+    private String buildCriteriaDescription(String fulltextQuery, String title, String year, String director, String star,
                                             String genre, String titlePrefix) {
         List<String> parts = new ArrayList<>();
+        if (fulltextQuery != null) {
+            parts.add("Full-text title query = \"" + fulltextQuery + "\"");
+        }
         if (title != null) {
             parts.add("Title contains \"" + title + "\"");
         }
@@ -290,6 +300,24 @@ public class MovieListServlet extends HttpServlet {
             return null;
         }
         return String.join("; ", parts);
+    }
+
+    private String buildBooleanPrefixQuery(String query) {
+        if (query == null) {
+            return null;
+        }
+        String[] rawTokens = query.trim().split("\\s+");
+        List<String> tokens = new ArrayList<>();
+        for (String token : rawTokens) {
+            String cleaned = token.replaceAll("[^A-Za-z0-9]", "");
+            if (!cleaned.isEmpty()) {
+                tokens.add("+" + cleaned + "*");
+            }
+        }
+        if (tokens.isEmpty()) {
+            return null;
+        }
+        return String.join(" ", tokens);
     }
 
     private int parseIntParam(String value, int defaultValue) {

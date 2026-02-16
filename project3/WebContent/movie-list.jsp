@@ -31,6 +31,7 @@
     String sortField2 = (String) request.getAttribute("sortField2");
     String sortOrder2 = (String) request.getAttribute("sortOrder2");
     String titleParam = (String) request.getAttribute("title");
+    String queryParam = (String) request.getAttribute("query");
     String yearParam = (String) request.getAttribute("year");
     String directorParam = (String) request.getAttribute("director");
     String starParam = (String) request.getAttribute("star");
@@ -57,6 +58,7 @@
 <div>
     <form action="movie-list" method="get">
         <% if (titleParam != null) { %><input type="hidden" name="title" value="<%= titleParam %>"><% } %>
+        <% if (queryParam != null) { %><input type="hidden" name="query" value="<%= queryParam %>"><% } %>
         <% if (yearParam != null) { %><input type="hidden" name="year" value="<%= yearParam %>"><% } %>
         <% if (directorParam != null) { %><input type="hidden" name="director" value="<%= directorParam %>"><% } %>
         <% if (starParam != null) { %><input type="hidden" name="star" value="<%= starParam %>"><% } %>
@@ -103,6 +105,7 @@
     <%
         String baseQuery = "";
         if (titleParam != null) baseQuery += "&title=" + URLEncoder.encode(titleParam, "UTF-8");
+        if (queryParam != null) baseQuery += "&query=" + URLEncoder.encode(queryParam, "UTF-8");
         if (yearParam != null) baseQuery += "&year=" + URLEncoder.encode(yearParam, "UTF-8");
         if (directorParam != null) baseQuery += "&director=" + URLEncoder.encode(directorParam, "UTF-8");
         if (starParam != null) baseQuery += "&star=" + URLEncoder.encode(starParam, "UTF-8");
