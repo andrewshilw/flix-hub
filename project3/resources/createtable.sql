@@ -84,7 +84,7 @@ CREATE TABLE ratings (
 INSERT INTO employees (email, password, fullname)
 VALUES (
     'classta@email.edu',
-    'AMid2RQWbGfUlbDCrLcxTU5XM8m5bvMvJjNgvyXXa78YOE11Elis5zYZEQ1BR6Ct',
+    'classta',
     'TA CS122B'
 )
 ON DUPLICATE KEY UPDATE
