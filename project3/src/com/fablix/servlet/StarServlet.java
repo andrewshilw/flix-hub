@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 import com.fablix.util.DbConfig;
 
@@ -29,48 +29,41 @@ public class StarServlet extends HttpServlet {
         out.println("<head><title>Fabflix</title></head>");
 
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            // create database connection
-            Connection connection = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
-            // declare statement
-            Statement statement = connection.createStatement();
-            // prepare query
+            Class.forName("com.mysql.cj.jdbc.Driver");
             String query = "SELECT * from stars limit 10";
-            // execute query
-            ResultSet resultSet = statement.executeQuery(query);
+            try (Connection connection = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
+                 PreparedStatement statement = connection.prepareStatement(query);
+                 ResultSet resultSet = statement.executeQuery()) {
 
-            out.println("<body>");
-            out.println("<h1>MovieDB Stars</h1>");
+                out.println("<body>");
+                out.println("<h1>MovieDB Stars</h1>");
 
-            out.println("<table border>");
+                out.println("<table border>");
 
-            // Add table header row
-            out.println("<tr>");
-            out.println("<td>id</td>");
-            out.println("<td>name</td>");
-            out.println("<td>birth year</td>");
-            out.println("</tr>");
-
-            // Add a row for every star result
-            while (resultSet.next()) {
-                // get a star from result set
-                String starID = resultSet.getString("id");
-                String starName = resultSet.getString("name");
-                String birthYear = resultSet.getString("birthyear");
-
+                // Add table header row
                 out.println("<tr>");
-                out.println("<td>" + starID + "</td>");
-                out.println("<td>" + starName + "</td>");
-                out.println("<td>" + birthYear + "</td>");
+                out.println("<td>id</td>");
+                out.println("<td>name</td>");
+                out.println("<td>birth year</td>");
                 out.println("</tr>");
+
+                // Add a row for every star result
+                while (resultSet.next()) {
+                    // get a star from result set
+                    String starID = resultSet.getString("id");
+                    String starName = resultSet.getString("name");
+                    String birthYear = resultSet.getString("birthyear");
+
+                    out.println("<tr>");
+                    out.println("<td>" + starID + "</td>");
+                    out.println("<td>" + starName + "</td>");
+                    out.println("<td>" + birthYear + "</td>");
+                    out.println("</tr>");
+                }
+
+                out.println("</table>");
+                out.println("</body>");
             }
-
-            out.println("</table>");
-            out.println("</body>");
-
-            resultSet.close();
-            statement.close();
-            connection.close();
 
         } catch (Exception e) {
             /*

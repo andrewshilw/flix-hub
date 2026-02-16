@@ -38,9 +38,15 @@ CREATE TABLE customers (
     ccId VARCHAR(20) NOT NULL,
     address VARCHAR(200) NOT NULL,
     email VARCHAR(50) NOT NULL,
-    password VARCHAR(20) NOT NULL,
+    password VARCHAR(128) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (ccId) REFERENCES creditcards(id)
+);
+
+CREATE TABLE employees (
+    email VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(128) NOT NULL,
+    fullname VARCHAR(100)
 );
 
 CREATE TABLE sales (
@@ -73,3 +79,13 @@ CREATE TABLE ratings (
     numVotes INTEGER NOT NULL,
     FOREIGN KEY (movieId) REFERENCES movies(id)
 );
+
+INSERT INTO employees (email, password, fullname)
+VALUES (
+    'classta@email.edu',
+    'AMid2RQWbGfUlbDCrLcxTU5XM8m5bvMvJjNgvyXXa78YOE11Elis5zYZEQ1BR6Ct',
+    'TA CS122B'
+)
+ON DUPLICATE KEY UPDATE
+    password = VALUES(password),
+    fullname = VALUES(fullname);

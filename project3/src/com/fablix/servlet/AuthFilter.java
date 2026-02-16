@@ -22,6 +22,11 @@ public class AuthFilter implements Filter {
         String contextPath = httpRequest.getContextPath();
         String path = httpRequest.getRequestURI().substring(contextPath.length());
 
+        if (path.startsWith("/_dashboard")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (isPublicPath(path)) {
             chain.doFilter(request, response);
             return;

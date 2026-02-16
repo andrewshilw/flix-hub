@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 
 import com.fablix.util.DbConfig;
 import com.fablix.util.RecaptchaVerifyUtils;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -56,8 +57,9 @@ public class LoginServlet extends HttpServlet {
                             return;
                         }
 
-                        String dbPassword = rs.getString("password");
-                        if (!password.equals(dbPassword)) {
+                        String encryptedPassword = rs.getString("password");
+                        boolean success = new StrongPasswordEncryptor().checkPassword(password, encryptedPassword);
+                        if (!success) {
                             request.setAttribute("error", "Incorrect password.");
                             request.getRequestDispatcher("login.jsp").forward(request, response);
                             return;
