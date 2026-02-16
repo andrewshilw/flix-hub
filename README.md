@@ -37,13 +37,13 @@
 #### Run
 ```bash
 mvn -q -DskipTests compile
-java -cp target/classes;target/cs122b-project3/WEB-INF/lib/* com.fablix.util.CsvDataImporter "C:\Users\shian\Downloads\csv_package-1.tar.gz"
+java -cp target/classes;target/cs122b-project3/WEB-INF/lib/* com.fablix.util.CsvDataImporter "csv_package-1.tar.gz"
 ```
 
 PowerShell equivalent:
 ```powershell
 mvn -q -DskipTests compile
-java -cp "target/classes;target/cs122b-project3/WEB-INF/lib/*" com.fablix.util.CsvDataImporter "C:\Users\shian\Downloads\csv_package-1.tar.gz"
+java -cp "target/classes;target/cs122b-project3/WEB-INF/lib/*" com.fablix.util.CsvDataImporter "csv_package-1.tar.gz"
 ```
 
 #### Cleaning / Validation Behavior
