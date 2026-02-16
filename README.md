@@ -19,7 +19,7 @@
 - Demo video: https://drive.google.com/file/d/1moS-igocPlDNaQBWmFUbn4yY8GWbHBJq/view?usp=sharing
 - Member: Andrew Shi (full contribution)
 
-### filenames with Prepared Statements
+### Filenames with Prepared Statements
 - src/com/fablix/servlet/AddToCartServlet.java
 - src/com/fablix/servlet/EmployeeDashboardServlet.java
 - src/com/fablix/servlet/LoginServlet.java
