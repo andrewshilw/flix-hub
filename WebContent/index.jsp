@@ -13,23 +13,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Fablix Main Page</title>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
     <style>
         .section { margin-bottom: 24px; }
         .browse-list a { margin-right: 8px; }
-        .autocomplete-suggestions {
-            border: 1px solid #ccc;
-            background: #fff;
-            overflow: auto;
-        }
-        .autocomplete-suggestion {
-            padding: 8px;
-            cursor: pointer;
-        }
-        .autocomplete-selected {
-            background: #e8f0fe;
-        }
     </style>
 </head>
 <body>
@@ -44,16 +30,8 @@
 
 <div class="section">
     <h2>Main Search</h2>
-    <form id="main-search-form" action="movie-list" method="get">
-        <label>Search Title (full-text):
-            <input
-                    type="text"
-                    id="autocomplete"
-                    name="query"
-                    placeholder="e.g. good u"
-                    autocomplete="off"
-                    data-context-path="<%= request.getContextPath() %>">
-        </label>
+    <form action="movie-list" method="get">
+        <label>Search Title (full-text): <input type="text" name="query" placeholder="e.g. good u"></label>
         <button type="submit">Search</button>
     </form>
 </div>
@@ -101,6 +79,5 @@
         <a href="movie-list?titlePrefix=*">*</a>
     </div>
 </div>
-<script src="<%= request.getContextPath() %>/js/autocomplete.js"></script>
 </body>
 </html>
