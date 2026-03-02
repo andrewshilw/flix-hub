@@ -26,7 +26,7 @@ public class StarServlet extends DatabaseServlet {
 
         try {
             String query = "SELECT * from stars limit 10";
-            try (Connection connection = getConnection();
+            try (Connection connection = getReadConnection();
                  PreparedStatement statement = connection.prepareStatement(query);
                  ResultSet resultSet = statement.executeQuery()) {
 

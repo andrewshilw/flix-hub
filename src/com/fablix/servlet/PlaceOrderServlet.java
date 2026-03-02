@@ -55,7 +55,7 @@ public class PlaceOrderServlet extends DatabaseServlet {
         Date saleDate = new Date(System.currentTimeMillis());
 
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getWriteConnection()) {
                 conn.setAutoCommit(false);
 
                 if (!isValidCard(conn, cardNumber, firstName, lastName, expiration)) {
@@ -121,7 +121,7 @@ public class PlaceOrderServlet extends DatabaseServlet {
         }
         String email = (String) emailObj;
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
                 String query = "SELECT id FROM customers WHERE email = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, email);

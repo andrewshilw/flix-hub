@@ -62,7 +62,7 @@ public class AddToCartServlet extends DatabaseServlet {
 
     private String fetchMovieTitle(String movieId) {
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
                 String query = "SELECT title FROM movies WHERE id = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, movieId);

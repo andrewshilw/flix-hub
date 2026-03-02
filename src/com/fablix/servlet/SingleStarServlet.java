@@ -21,7 +21,7 @@ public class SingleStarServlet extends DatabaseServlet {
         List<Movie> moviesActedIn = new ArrayList<>();
 
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
 
                 // 1. Get Star Info
                 String starQuery = "SELECT * FROM stars WHERE id = ?";

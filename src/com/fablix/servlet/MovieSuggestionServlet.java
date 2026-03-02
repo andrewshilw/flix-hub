@@ -31,7 +31,7 @@ public class MovieSuggestionServlet extends DatabaseServlet {
         List<String> suggestions = new ArrayList<>();
 
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
                 StringBuilder query = new StringBuilder();
                 query.append("SELECT m.id, m.title, COALESCE(r.rating, 0) AS rating ")
                         .append("FROM movies m ")

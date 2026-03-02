@@ -43,7 +43,7 @@ public class LoginServlet extends DatabaseServlet {
         }
 
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
                 String query = "SELECT id, password FROM customers WHERE email = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, email);

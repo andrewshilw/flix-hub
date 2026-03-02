@@ -99,7 +99,7 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
 
     private EmployeeAuth verifyEmployee(String email, String password) throws Exception {
         String query = "SELECT password, fullname FROM employees WHERE email = ?";
-        try (Connection conn = getConnection();
+        try (Connection conn = getReadConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -138,7 +138,7 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
                             "SELECT CONCAT('nm', LPAD(COALESCE(MAX(CAST(SUBSTRING(id, 3) AS UNSIGNED)), 0) + 1, 7, '0')), ?, ? " +
                             "FROM stars";
 
-            try (Connection conn = getConnection();
+            try (Connection conn = getWriteConnection();
                  PreparedStatement stmt = conn.prepareStatement(insertSql)) {
                 stmt.setString(1, name);
                 if (birthYear == null) {
@@ -175,7 +175,7 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
         }
 
         try {
-            try (Connection conn = getConnection();
+            try (Connection conn = getWriteConnection();
                  CallableStatement call = conn.prepareCall("{CALL add_movie(?, ?, ?, ?, ?)}")) {
                 call.setString(1, title);
                 call.setInt(2, year);
@@ -204,7 +204,7 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
     private List<String[]> loadMetadata() {
         List<String[]> rows = new ArrayList<>();
         try {
-            try (Connection conn = getConnection();
+            try (Connection conn = getReadConnection();
                  PreparedStatement schemaStmt = conn.prepareStatement("SELECT DATABASE()");
                  ResultSet schemaRs = schemaStmt.executeQuery()) {
 

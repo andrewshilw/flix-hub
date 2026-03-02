@@ -15,7 +15,7 @@ public class SingleMovieServlet extends DatabaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
 
                 // Query to get details for ONE movie by ID
                 String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +

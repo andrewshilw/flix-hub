@@ -16,6 +16,7 @@ public class MovieListServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        long jdbcElapsedTime = 0L;
         String fulltextRawQuery = trimToNull(request.getParameter("query"));
         List<String> fulltextTokens = tokenizeSearchQuery(fulltextRawQuery);
         String title = trimToNull(request.getParameter("title"));
@@ -99,8 +100,10 @@ public class MovieListServlet extends DatabaseServlet {
         List<Movie> movieList = new ArrayList<>();
         int totalCount = 0;
 
+        long jdbcStartTime = 0L;
         try {
-            try (Connection conn = getConnection()) {
+            jdbcStartTime = System.nanoTime();
+            try (Connection conn = getReadConnection()) {
 
                 StringBuilder query = new StringBuilder();
                 query.append("SELECT m.id, m.title, m.year, m.director, r.rating, ")
@@ -210,9 +213,15 @@ public class MovieListServlet extends DatabaseServlet {
                     }
                 }
             }
+            jdbcElapsedTime = System.nanoTime() - jdbcStartTime;
         } catch (Exception e) {
+            if (jdbcStartTime != 0L) {
+                jdbcElapsedTime = System.nanoTime() - jdbcStartTime;
+            }
             e.printStackTrace();
         }
+
+        request.setAttribute(SearchTimingFilter.JDBC_TIME_ATTRIBUTE, jdbcElapsedTime);
 
         HttpSession session = request.getSession();
         String queryString = request.getQueryString();

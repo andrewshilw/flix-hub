@@ -21,7 +21,7 @@ public class MainPageServlet extends DatabaseServlet {
         List<String> genres = new ArrayList<>();
 
         try {
-            try (Connection conn = getConnection()) {
+            try (Connection conn = getReadConnection()) {
                 String query = "SELECT name FROM genres ORDER BY name ASC";
                 try (PreparedStatement statement = conn.prepareStatement(query);
                      ResultSet rs = statement.executeQuery()) {
