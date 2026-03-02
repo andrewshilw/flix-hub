@@ -292,3 +292,14 @@ genres_in_movies: inserted=9786, skipped-duplicate=25, bad=39, timeMs=241
 ratings: inserted=1591, skipped-duplicate=2, bad=1, timeMs=109
 Import finished in 4s
 ```
+
+### Project 4: JDBC Connection Pooling
+- Connection pooling is configured in `WebContent/META-INF/context.xml` using Tomcat JDBC pool with `org.apache.tomcat.jdbc.pool.DataSourceFactory`, `maxTotal`, `maxIdle`, `maxWaitMillis`, and `cachePrepStmts=true` in the JDBC URL.
+- The shared pooled datasource is looked up in `src/com/fablix/servlet/DatabaseServlet.java` via `java:comp/env/jdbc/moviedb`.
+- All database-backed servlets now use pooled connections by extending `src/com/fablix/servlet/DatabaseServlet.java`, including `MainPageServlet`, `MovieListServlet`, `MovieSuggestionServlet`, `SingleMovieServlet`, `SingleStarServlet`, `LoginServlet`, `AddToCartServlet`, `PlaceOrderServlet`, `EmployeeDashboardServlet`, and `StarServlet`.
+- The JNDI resource reference is declared in `WebContent/WEB-INF/web.xml`.
+
+### Project 4: Prepared Statements
+- Prepared statements remain in the servlet search and transaction flows for all SQL involving user input.
+- Search-related prepared statements are used in `src/com/fablix/servlet/MovieListServlet.java`, `src/com/fablix/servlet/MovieSuggestionServlet.java`, `src/com/fablix/servlet/SingleMovieServlet.java`, `src/com/fablix/servlet/SingleStarServlet.java`, and `src/com/fablix/servlet/MainPageServlet.java`.
+- Other prepared-statement usage is in `src/com/fablix/servlet/LoginServlet.java`, `src/com/fablix/servlet/AddToCartServlet.java`, `src/com/fablix/servlet/PlaceOrderServlet.java`, `src/com/fablix/servlet/EmployeeDashboardServlet.java`, and `src/com/fablix/servlet/StarServlet.java`.

@@ -1,24 +1,21 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Movie;
-import com.fablix.util.DbConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.*;
 
 @WebServlet("/single-movie")
-public class SingleMovieServlet extends HttpServlet {
+public class SingleMovieServlet extends DatabaseServlet {
     private static final long serialVersionUID = 2L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
 
                 // Query to get details for ONE movie by ID
                 String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +

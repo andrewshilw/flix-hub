@@ -9,16 +9,14 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import com.fablix.util.DbConfig;
 import com.fablix.util.RecaptchaVerifyUtils;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 @WebServlet("/login")
-public class LoginServlet extends HttpServlet {
+public class LoginServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,8 +43,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
                 String query = "SELECT id, password FROM customers WHERE email = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, email);

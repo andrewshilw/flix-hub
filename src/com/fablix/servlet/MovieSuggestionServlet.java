@@ -1,22 +1,18 @@
 package com.fablix.servlet;
-
-import com.fablix.util.DbConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/movie-suggestion")
-public class MovieSuggestionServlet extends HttpServlet {
+public class MovieSuggestionServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
     private static final int MAX_SUGGESTIONS = 10;
 
@@ -35,8 +31,7 @@ public class MovieSuggestionServlet extends HttpServlet {
         List<String> suggestions = new ArrayList<>();
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
                 StringBuilder query = new StringBuilder();
                 query.append("SELECT m.id, m.title, COALESCE(r.rating, 0) AS rating ")
                         .append("FROM movies m ")

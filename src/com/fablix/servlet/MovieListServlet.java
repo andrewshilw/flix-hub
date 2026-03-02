@@ -1,9 +1,7 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Movie;
-import com.fablix.util.DbConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/movie-list")
-public class MovieListServlet extends HttpServlet {
+public class MovieListServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -102,8 +100,7 @@ public class MovieListServlet extends HttpServlet {
         int totalCount = 0;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Modern driver class
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
 
                 StringBuilder query = new StringBuilder();
                 query.append("SELECT m.id, m.title, m.year, m.director, r.rating, ")

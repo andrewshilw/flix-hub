@@ -2,7 +2,6 @@ package com.fablix.servlet;
 
 import com.fablix.model.CartItem;
 import com.fablix.util.CartUtil;
-import com.fablix.util.DbConfig;
 import com.fablix.util.PriceUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,13 +12,12 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Map;
 
 @WebServlet("/add-to-cart")
-public class AddToCartServlet extends HttpServlet {
+public class AddToCartServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -64,8 +62,7 @@ public class AddToCartServlet extends HttpServlet {
 
     private String fetchMovieTitle(String movieId) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
                 String query = "SELECT title FROM movies WHERE id = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, movieId);

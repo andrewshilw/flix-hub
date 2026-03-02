@@ -2,10 +2,8 @@ package com.fablix.servlet;
 
 import com.fablix.model.CartItem;
 import com.fablix.util.CartUtil;
-import com.fablix.util.DbConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +11,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -22,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @WebServlet("/place-order")
-public class PlaceOrderServlet extends HttpServlet {
+public class PlaceOrderServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -58,8 +55,7 @@ public class PlaceOrderServlet extends HttpServlet {
         Date saleDate = new Date(System.currentTimeMillis());
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
                 conn.setAutoCommit(false);
 
                 if (!isValidCard(conn, cardNumber, firstName, lastName, expiration)) {
@@ -125,8 +121,7 @@ public class PlaceOrderServlet extends HttpServlet {
         }
         String email = (String) emailObj;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
                 String query = "SELECT id FROM customers WHERE email = ?";
                 try (PreparedStatement statement = conn.prepareStatement(query)) {
                     statement.setString(1, email);

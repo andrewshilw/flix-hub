@@ -1,11 +1,9 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Star;
-import com.fablix.util.DbConfig;
 import com.fablix.model.Movie;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/single-star")
-public class SingleStarServlet extends HttpServlet {
+public class SingleStarServlet extends DatabaseServlet {
     private static final long serialVersionUID = 3L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -23,8 +21,7 @@ public class SingleStarServlet extends HttpServlet {
         List<Movie> moviesActedIn = new ArrayList<>();
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD)) {
+            try (Connection conn = getConnection()) {
 
                 // 1. Get Star Info
                 String starQuery = "SELECT * FROM stars WHERE id = ?";

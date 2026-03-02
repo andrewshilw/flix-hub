@@ -1,6 +1,5 @@
 package com.fablix.servlet;
 
-import com.fablix.util.DbConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,7 +11,6 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/_dashboard")
-public class EmployeeDashboardServlet extends HttpServlet {
+public class EmployeeDashboardServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -100,9 +98,8 @@ public class EmployeeDashboardServlet extends HttpServlet {
     }
 
     private EmployeeAuth verifyEmployee(String email, String password) throws Exception {
-        Class.forName("com.mysql.cj.jdbc.Driver");
         String query = "SELECT password, fullname FROM employees WHERE email = ?";
-        try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -136,13 +133,12 @@ public class EmployeeDashboardServlet extends HttpServlet {
         }
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
             String insertSql =
                     "INSERT INTO stars(id, name, birthYear) " +
                             "SELECT CONCAT('nm', LPAD(COALESCE(MAX(CAST(SUBSTRING(id, 3) AS UNSIGNED)), 0) + 1, 7, '0')), ?, ? " +
                             "FROM stars";
 
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
+            try (Connection conn = getConnection();
                  PreparedStatement stmt = conn.prepareStatement(insertSql)) {
                 stmt.setString(1, name);
                 if (birthYear == null) {
@@ -179,8 +175,7 @@ public class EmployeeDashboardServlet extends HttpServlet {
         }
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
+            try (Connection conn = getConnection();
                  CallableStatement call = conn.prepareCall("{CALL add_movie(?, ?, ?, ?, ?)}")) {
                 call.setString(1, title);
                 call.setInt(2, year);
@@ -209,8 +204,7 @@ public class EmployeeDashboardServlet extends HttpServlet {
     private List<String[]> loadMetadata() {
         List<String[]> rows = new ArrayList<>();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
+            try (Connection conn = getConnection();
                  PreparedStatement schemaStmt = conn.prepareStatement("SELECT DATABASE()");
                  ResultSet schemaRs = schemaStmt.executeQuery()) {
 

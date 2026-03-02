@@ -1,21 +1,17 @@
 package com.fablix.servlet;
 
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import com.fablix.util.DbConfig;
-
 // This annotation maps this Java Servlet Class to a URL
 @WebServlet("/stars")
-public class StarServlet extends HttpServlet {
+public class StarServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -29,9 +25,8 @@ public class StarServlet extends HttpServlet {
         out.println("<head><title>Fabflix</title></head>");
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
             String query = "SELECT * from stars limit 10";
-            try (Connection connection = DriverManager.getConnection(DbConfig.URL, DbConfig.USER, DbConfig.PASSWORD);
+            try (Connection connection = getConnection();
                  PreparedStatement statement = connection.prepareStatement(query);
                  ResultSet resultSet = statement.executeQuery()) {
 
