@@ -19,7 +19,7 @@ public class MovieListServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String fulltextRawQuery = trimToNull(request.getParameter("query"));
-        String fulltextBooleanQuery = buildBooleanPrefixQuery(fulltextRawQuery);
+        List<String> fulltextTokens = tokenizeSearchQuery(fulltextRawQuery);
         String title = trimToNull(request.getParameter("title"));
         String year = trimToNull(request.getParameter("year"));
         String director = trimToNull(request.getParameter("director"));
@@ -43,7 +43,7 @@ public class MovieListServlet extends HttpServlet {
             pageSize = 10;
         }
 
-        boolean hasSearchParams = fulltextBooleanQuery != null || title != null || year != null || director != null || star != null;
+        boolean hasSearchParams = !fulltextTokens.isEmpty() || title != null || year != null || director != null || star != null;
         boolean hasBrowseParams = genre != null || titlePrefix != null;
         boolean hasFilters = hasSearchParams || hasBrowseParams;
         boolean sortProvided = sortField != null || sortField1 != null;
@@ -122,9 +122,9 @@ public class MovieListServlet extends HttpServlet {
                 List<String> conditions = new ArrayList<>();
                 List<Object> params = new ArrayList<>();
 
-                if (fulltextBooleanQuery != null) {
-                    conditions.add("MATCH(m.title) AGAINST (? IN BOOLEAN MODE)");
-                    params.add(fulltextBooleanQuery);
+                for (String token : fulltextTokens) {
+                    conditions.add("LOWER(m.title) REGEXP ?");
+                    params.add(buildTitlePrefixRegex(token));
                 }
                 if (title != null) {
                     conditions.add("m.title LIKE ?");
@@ -302,22 +302,23 @@ public class MovieListServlet extends HttpServlet {
         return String.join("; ", parts);
     }
 
-    private String buildBooleanPrefixQuery(String query) {
+    private List<String> tokenizeSearchQuery(String query) {
+        List<String> tokens = new ArrayList<>();
         if (query == null) {
-            return null;
+            return tokens;
         }
         String[] rawTokens = query.trim().split("\\s+");
-        List<String> tokens = new ArrayList<>();
         for (String token : rawTokens) {
-            String cleaned = token.replaceAll("[^A-Za-z0-9]", "");
+            String cleaned = token.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
             if (!cleaned.isEmpty()) {
-                tokens.add("+" + cleaned + "*");
+                tokens.add(cleaned);
             }
         }
-        if (tokens.isEmpty()) {
-            return null;
-        }
-        return String.join(" ", tokens);
+        return tokens;
+    }
+
+    private String buildTitlePrefixRegex(String token) {
+        return "(^|[^[:alnum:]])" + token + "[[:alnum:]]*";
     }
 
     private int parseIntParam(String value, int defaultValue) {
