@@ -16,6 +16,25 @@
     <style>
         .section { margin-bottom: 24px; }
         .browse-list a { margin-right: 8px; }
+        .autocomplete-suggestions {
+            border: 1px solid #ddd;
+            background: #fff;
+            overflow: auto;
+            position: absolute;
+            z-index: 9999;
+            max-height: 280px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        .autocomplete-suggestion {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .autocomplete-selected {
+            background: #f2f2f2;
+        }
+        .fallback-autocomplete-menu {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -30,8 +49,8 @@
 
 <div class="section">
     <h2>Main Search</h2>
-    <form action="movie-list" method="get">
-        <label>Search Title (full-text): <input type="text" name="query" placeholder="e.g. good u"></label>
+    <form action="movie-list" method="get" id="main-search-form">
+        <label>Search Title (full-text): <input type="text" id="main-search-input" name="query" placeholder="e.g. good u" autocomplete="off"></label>
         <button type="submit">Search</button>
     </form>
 </div>
@@ -79,5 +98,8 @@
         <a href="movie-list?titlePrefix=*">*</a>
     </div>
 </div>
+<script>
+<%@ include file="js/autocomplete.js" %>
+</script>
 </body>
 </html>
