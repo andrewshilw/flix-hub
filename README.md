@@ -292,3 +292,91 @@ genres_in_movies: inserted=9786, skipped-duplicate=25, bad=39, timeMs=241
 ratings: inserted=1591, skipped-duplicate=2, bad=1, timeMs=109
 Import finished in 4s
 ```
+## Project 4
+
+# General
+- #### Team#: 
+
+- #### Names:
+  Andrew Shi
+
+- #### Project 4 Video Demo Link:
+
+- #### Instruction of deployment:
+  1. Configure the Tomcat JNDI datasource in `WebContent/META-INF/context.xml` with the correct MySQL hostname, port, schema, username, and password.
+  2. Ensure the MySQL schema `moviedb` is running and accessible from the Tomcat server.
+  3. Deploy the project to Tomcat so the application can resolve `java:comp/env/jdbc/moviedb-master`, `java:comp/env/jdbc/moviedb-replica-1`, and `java:comp/env/jdbc/moviedb-replica-2` from `WebContent/WEB-INF/web.xml`.
+  4. Start Tomcat and verify the Fabflix servlets can connect through the shared datasource defined in `src/com/fablix/servlet/DatabaseServlet.java`.
+
+- #### Collaborations and Work Distribution:
+  Andrew Shi completed the project individually.
+
+
+# Connection Pooling
+- #### Include the filename/path of all code/configuration files in GitHub of using JDBC Connection Pooling.
+  - `WebContent/META-INF/context.xml`
+  - `WebContent/WEB-INF/web.xml`
+  - `src/com/fablix/servlet/DatabaseServlet.java`
+  - `src/com/fablix/servlet/MainPageServlet.java`
+  - `src/com/fablix/servlet/MovieListServlet.java`
+  - `src/com/fablix/servlet/MovieSuggestionServlet.java`
+  - `src/com/fablix/servlet/SingleMovieServlet.java`
+  - `src/com/fablix/servlet/SingleStarServlet.java`
+  - `src/com/fablix/servlet/LoginServlet.java`
+  - `src/com/fablix/servlet/AddToCartServlet.java`
+  - `src/com/fablix/servlet/PlaceOrderServlet.java`
+  - `src/com/fablix/servlet/EmployeeDashboardServlet.java`
+  - `src/com/fablix/servlet/StarServlet.java`
+
+- #### Explain how Connection Pooling is utilized in the Fabflix code.
+  Connection pooling is configured through Tomcat JDBC Pool in `WebContent/META-INF/context.xml` using the `org.apache.tomcat.jdbc.pool.DataSourceFactory`. Three datasources are registered in `WebContent/WEB-INF/web.xml`: `jdbc/moviedb-master`, `jdbc/moviedb-replica-1`, and `jdbc/moviedb-replica-2`. They are looked up during servlet initialization in `src/com/fablix/servlet/DatabaseServlet.java`, and database-backed servlets explicitly borrow either read-replica or master connections instead of opening brand-new JDBC connections with `DriverManager`.
+
+- #### Explain how Connection Pooling works with two backend SQL.
+  Connection pooling is configured with three Tomcat JDBC pools in `WebContent/META-INF/context.xml`: one master datasource, `jdbc/moviedb-master`, and two read-replica datasources, `jdbc/moviedb-replica-1` and `jdbc/moviedb-replica-2`. `src/com/fablix/servlet/DatabaseServlet.java` looks up all three pools during servlet initialization. Read-only requests borrow connections from the two replica pools in round-robin order, while write requests always borrow connections from the master pool.
+
+
+# Master/Slave
+- #### Include the filename/path of all code/configuration files in GitHub of routing queries to Master/Slave SQL.
+  Master/slave routing is implemented in the following files:
+  - `WebContent/META-INF/context.xml`
+  - `WebContent/WEB-INF/web.xml`
+  - `src/com/fablix/servlet/DatabaseServlet.java`
+  - `src/com/fablix/servlet/AddToCartServlet.java`
+  - `src/com/fablix/servlet/EmployeeDashboardServlet.java`
+  - `src/com/fablix/servlet/LoginServlet.java`
+  - `src/com/fablix/servlet/MainPageServlet.java`
+  - `src/com/fablix/servlet/MovieListServlet.java`
+  - `src/com/fablix/servlet/MovieSuggestionServlet.java`
+  - `src/com/fablix/servlet/PlaceOrderServlet.java`
+  - `src/com/fablix/servlet/SingleMovieServlet.java`
+  - `src/com/fablix/servlet/SingleStarServlet.java`
+  - `src/com/fablix/servlet/StarServlet.java`
+
+- #### How read/write requests were routed to Master/Slave SQL?
+  `DatabaseServlet` now exposes `getReadConnection()` and `getWriteConnection()`. Read paths such as browsing, login validation, metadata fetches, and movie lookup use `getReadConnection()`, which round-robins between `jdbc/moviedb-replica-1` and `jdbc/moviedb-replica-2`. Write paths such as placing orders, adding stars, and invoking the `add_movie` stored procedure use `getWriteConnection()`, which always targets `jdbc/moviedb-master`.
+
+
+# JMeter TS/TJ Time Logs
+- #### Instructions of how to use the `log_processing.*` script to process the JMeter logs.
+  - Script location: `WebContent/log_processing.py`
+  - Usage:
+```bash
+python WebContent/log_processing.py /path/to/search-timing.log
+```
+  - The script reads lines in the format `TS=<nanoseconds>,TJ=<nanoseconds>` and prints the sample count, average `TS`, and average `TJ`.
+
+
+# JMeter TS/TJ Time Measurement Report
+
+| **Single-instance Version Test Plan**          | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
+|------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
+| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 3: HTTPS/10 threads                       | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 4: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+
+| **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
+|------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
+| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 3: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
