@@ -374,4 +374,4 @@ python WebContent/log_processing.py /path/to/search-timing.log
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
 | Case 1: HTTP/1 thread                          | ![](resources/img/Scaled1Thread.png) | ??                         | ??                                  | ??                        | ??           |
 | Case 2: HTTP/10 threads                        | ![](resources/img/Scaled10Threads.png)   | ??                         | ??                                  | ??                        | ??           |
-| Case 3: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 3: HTTP/10 threads/No connection pooling  | ![](img/scaled-10-threads-no-pooling.png)   | ??                         | ??                                  | ??                        | ??           |
