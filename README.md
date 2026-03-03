@@ -292,15 +292,10 @@ genres_in_movies: inserted=9786, skipped-duplicate=25, bad=39, timeMs=241
 ratings: inserted=1591, skipped-duplicate=2, bad=1, timeMs=109
 Import finished in 4s
 ```
+
 ## Project 4
-
-# General
-- #### Team#: 
-
-- #### Names:
-  Andrew Shi
-
-- #### Project 4 Video Demo Link:
+- Demo video: https://drive.google.com/file/d/1IuvNFinqBAzkDlGQsSWrQPNC-rL9bM4M/view?usp=drive_link
+- Member: Andrew Shi (full contribution)
 
 - #### Instruction of deployment:
   1. Configure the Tomcat JNDI datasource in `WebContent/META-INF/context.xml` with the correct MySQL hostname, port, schema, username, and password.
