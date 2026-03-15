@@ -32,7 +32,7 @@
 <h1><%= star.getName() %></h1>
 <p><strong>Date of Birth:</strong> <%= (star.getBirthYear() != 0) ? star.getBirthYear() : "N/A" %></p>
 <% if (accessCount != null) { %>
-<p><strong>Shared star-service access count:</strong> <%= accessCount %></p>
+<p><strong>Shared movies-service access count:</strong> <%= accessCount %></p>
 <% } %>
 
 <h3>Movies Acted In</h3>

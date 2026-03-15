@@ -126,9 +126,9 @@
     </profile>
 
     <profile>
-      <id>star</id>
+      <id>movies</id>
       <properties>
-        <endpointDir>src/star</endpointDir>
+        <endpointDir>src/movies</endpointDir>
         <extraSourceDir>src/none</extraSourceDir>
         <excludes>login.jsp</excludes>
       </properties>
@@ -140,7 +140,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <endpointDir>src/star</endpointDir>
+        <endpointDir>src/movies</endpointDir>
         <extraSourceDir>src/login</extraSourceDir>
         <excludes></excludes>
       </properties>
