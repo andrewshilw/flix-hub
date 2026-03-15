@@ -2,11 +2,12 @@ package com.fablix.servlet;
 
 import com.fablix.model.CartItem;
 import com.fablix.util.CartUtil;
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -23,9 +24,9 @@ public class PlaceOrderServlet extends DatabaseServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(true);
-        Map<String, CartItem> cart = CartUtil.ensureCart(session.getAttribute("cart"));
-        session.setAttribute("cart", cart);
+        RedisSession session = RedisSessionManager.getOrCreateSession(request, response);
+        Map<String, CartItem> cart = CartUtil.ensureCart(session.getCart());
+        session.setCart(cart);
 
         if (cart.isEmpty()) {
             forwardWithError(request, response, "Your cart is empty.", cart);
@@ -42,14 +43,14 @@ public class PlaceOrderServlet extends DatabaseServlet {
             return;
         }
 
-        Integer customerId = (Integer) session.getAttribute("customerId");
+        Integer customerId = session.getCustomerId();
         if (customerId == null) {
             customerId = fetchCustomerId(session);
             if (customerId == null) {
                 forwardWithError(request, response, "Unable to find your customer record.", cart);
                 return;
             }
-            session.setAttribute("customerId", customerId);
+            session.setCustomerId(customerId);
         }
 
         Date saleDate = new Date(System.currentTimeMillis());
@@ -85,7 +86,8 @@ public class PlaceOrderServlet extends DatabaseServlet {
 
         List<CartItem> purchasedItems = new ArrayList<>(cart.values());
         double total = CartUtil.computeTotal(cart);
-        session.setAttribute("cart", new LinkedHashMap<>());
+        session.setCart(new LinkedHashMap<>());
+        RedisSessionManager.saveSession(request, response, session);
 
         request.setAttribute("purchasedItems", purchasedItems);
         request.setAttribute("total", total);
@@ -114,12 +116,11 @@ public class PlaceOrderServlet extends DatabaseServlet {
         request.getRequestDispatcher("payment.jsp").forward(request, response);
     }
 
-    private Integer fetchCustomerId(HttpSession session) {
-        Object emailObj = session.getAttribute("customerEmail");
-        if (!(emailObj instanceof String)) {
+    private Integer fetchCustomerId(RedisSession session) {
+        String email = session.getCustomerEmail();
+        if (email == null) {
             return null;
         }
-        String email = (String) emailObj;
         try {
             try (Connection conn = getReadConnection()) {
                 String query = "SELECT id FROM customers WHERE email = ?";

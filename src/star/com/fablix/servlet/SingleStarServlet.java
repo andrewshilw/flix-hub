@@ -2,6 +2,9 @@ package com.fablix.servlet;
 
 import com.fablix.model.Star;
 import com.fablix.model.Movie;
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
+import com.fablix.util.RedisUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,8 +70,13 @@ public class SingleStarServlet extends DatabaseServlet {
 
         request.setAttribute("star", star);
         request.setAttribute("movies", moviesActedIn);
-        String backToListUrl = (String) request.getSession().getAttribute("lastMovieListUrl");
-        request.setAttribute("backToListUrl", backToListUrl);
+        RedisSession session = RedisSessionManager.getOrCreateSession(request, response);
+        request.setAttribute("backToListUrl", session.getLastMovieListUrl());
+        if (session.getCustomerEmail() != null) {
+            long accessCount = RedisUtil.increment("accessCount:" + session.getCustomerEmail());
+            request.setAttribute("accessCount", accessCount);
+        }
+        RedisSessionManager.saveSession(request, response, session);
         request.getRequestDispatcher("single-star.jsp").forward(request, response);
     }
 }

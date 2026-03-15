@@ -1,6 +1,8 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Movie;
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,8 +57,13 @@ public class SingleMovieServlet extends DatabaseServlet {
             e.printStackTrace();
         }
 
-        String backToListUrl = (String) request.getSession().getAttribute("lastMovieListUrl");
-        request.setAttribute("backToListUrl", backToListUrl);
+        RedisSession session = RedisSessionManager.getOrCreateSession(request, response);
+        request.setAttribute("backToListUrl", session.getLastMovieListUrl());
+        request.setAttribute("cartMessage", session.getCartMessage());
+        request.setAttribute("cartMessageType", session.getCartMessageType());
+        session.setCartMessage(null);
+        session.setCartMessageType(null);
+        RedisSessionManager.saveSession(request, response, session);
         request.getRequestDispatcher("single-movie.jsp").forward(request, response);
     }
 }

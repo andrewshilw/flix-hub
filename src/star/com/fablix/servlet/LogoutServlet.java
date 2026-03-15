@@ -1,5 +1,6 @@
 package com.fablix.servlet;
 
+import com.fablix.util.RedisSessionManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,9 +14,7 @@ public class LogoutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getSession(false) != null) {
-            request.getSession(false).invalidate();
-        }
+        RedisSessionManager.destroySession(request, response);
         response.sendRedirect(request.getContextPath() + "/login");
     }
 }

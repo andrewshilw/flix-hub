@@ -3,12 +3,12 @@ package com.fablix.servlet;
 import com.fablix.model.CartItem;
 import com.fablix.util.CartUtil;
 import com.fablix.util.PriceUtil;
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,7 +22,7 @@ public class AddToCartServlet extends DatabaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String movieId = request.getParameter("movieId");
-        HttpSession session = request.getSession(true);
+        RedisSession session = RedisSessionManager.getOrCreateSession(request, response);
 
         String message;
         String messageType = "success";
@@ -36,7 +36,7 @@ public class AddToCartServlet extends DatabaseServlet {
                 message = "Movie not found.";
                 messageType = "error";
             } else {
-                Map<String, CartItem> cart = CartUtil.ensureCart(session.getAttribute("cart"));
+                Map<String, CartItem> cart = CartUtil.ensureCart(session.getCart());
                 CartItem item = cart.get(movieId);
                 if (item == null) {
                     double price = PriceUtil.priceForMovie(movieId);
@@ -45,13 +45,14 @@ public class AddToCartServlet extends DatabaseServlet {
                     item.setQuantity(item.getQuantity() + 1);
                 }
                 cart.put(movieId, item);
-                session.setAttribute("cart", cart);
+                session.setCart(cart);
                 message = "Added \"" + title + "\" to your cart.";
             }
         }
 
-        session.setAttribute("cartMessage", message);
-        session.setAttribute("cartMessageType", messageType);
+        session.setCartMessage(message);
+        session.setCartMessageType(messageType);
+        RedisSessionManager.saveSession(request, response, session);
 
         String referer = request.getHeader("Referer");
         if (referer == null || referer.isBlank()) {

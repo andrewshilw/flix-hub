@@ -2,18 +2,27 @@ package com.fablix.servlet;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
 
 import java.io.IOException;
 
 @WebFilter("/*")
 public class AuthFilter implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) {
+        RedisSessionManager.init();
+    }
+
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -32,14 +41,18 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        HttpSession session = httpRequest.getSession(false);
-        boolean loggedIn = session != null && session.getAttribute("customerEmail") != null;
+        RedisSession session = RedisSessionManager.loadSession(httpRequest);
+        boolean loggedIn = session != null && session.getCustomerEmail() != null;
 
         if (!loggedIn) {
             httpResponse.sendRedirect(contextPath + "/login");
             return;
         }
 
+        httpRequest.setAttribute("customerEmail", session.getCustomerEmail());
+        httpRequest.setAttribute("customerId", session.getCustomerId());
+        httpRequest.setAttribute("customerLoginTime", session.getCustomerLoginTime());
+        RedisSessionManager.saveSession(httpRequest, httpResponse, session);
         chain.doFilter(request, response);
     }
 
