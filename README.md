@@ -1,10 +1,16 @@
 # CS 122B Winter 2026 Projects
 
-## Project 1
+<details>
+<summary>Project 1</summary>
+
 - Demo video: https://drive.google.com/file/d/1Xu-MGIgYv1Lb4EyGZ_3DIY7em0WsBUcZ/view?usp=sharing
 - Member: Andrew Shi (full contribution)
 
-## Project 2
+</details>
+
+<details>
+<summary>Project 2</summary>
+
 - Demo video: https://drive.google.com/file/d/1oZt3azQpJqjajToQRAIQBIDSFnS2SACq/view?usp=sharing
 - Member: Andrew Shi (full contribution)
 
@@ -15,7 +21,11 @@
 - Browse by title (A-Z / 0-9): `MovieListServlet` uses `LIKE` with `prefix%` (case-insensitive via `UPPER(m.title)`) to match titles that start with the selected character.
 - Year uses exact match (`m.year = ?`) and does not use substring matching.
 
-## Project 3
+</details>
+
+<details>
+<summary>Project 3</summary>
+
 - Demo video: https://drive.google.com/file/d/1moS-igocPlDNaQBWmFUbn4yY8GWbHBJq/view?usp=sharing
 - Member: Andrew Shi (full contribution)
 
@@ -293,7 +303,11 @@ ratings: inserted=1591, skipped-duplicate=2, bad=1, timeMs=109
 Import finished in 4s
 ```
 
-## Project 4
+</details>
+
+<details>
+<summary>Project 4</summary>
+
 - Demo video: https://drive.google.com/file/d/1IuvNFinqBAzkDlGQsSWrQPNC-rL9bM4M/view?usp=drive_link
 - Member: Andrew Shi (full contribution)
 
@@ -375,3 +389,30 @@ python WebContent/log_processing.py /path/to/search-timing.log
 | Case 1: HTTP/1 thread                          | ![](resources/img/Scaled1Thread.png) | ??                         | ??                                  | ??                        | ??           |
 | Case 2: HTTP/10 threads                        | ![](resources/img/Scaled10Threads.png)   | ??                         | ??                                  | ??                        | ??           |
 | Case 3: HTTP/10 threads/No connection pooling  | ![](img/scaled-10-threads-no-pooling.png)   | ??                         | ??                                  | ??                        | ??           |
+
+</details>
+
+## Project 5
+- Demo video: https://drive.google.com/file/d/1N7QZzA1rMIuWm-xifGVOHzG7kPXaY1Ce/view?usp=sharing
+- Member: Andrew Shi (full contribution)
+
+### Task 4: Multi-Service Split
+
+#### Service Endpoints
+- `login` service
+  - `/login`
+
+- `movies` service
+  - `/`
+  - `/main`
+  - `/_dashboard`
+  - `/logout`
+  - `/movie-list`
+  - `/movie-suggestion`
+  - `/single-movie`
+  - `/single-star`
+  - `/stars`
+  - `/add-to-cart`
+  - `/shopping-cart`
+  - `/payment`
+  - `/place-order`
