@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs122b-project-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs122b-project-redis
+  template:
+    metadata:
+      labels:
+        app: cs122b-project-redis
+    spec:
+      containers:
+        - name: cs122b-project-redis-container
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: cs122b-project-redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs122b-project-movies
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cs122b-project-movies
+  template:
+    metadata:
+      labels:
+        app: cs122b-project-movies
+    spec:
+      containers:
+        - name: cs122b-project-movies-container
+          image: shiandrew/cs122b-project-movies:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cs122b-project-movies-service
+spec:
+  selector:
+    app: cs122b-project-movies
+  ports:
+    - name: http
+      port: 8080
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs122b-project-login
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cs122b-project-login
+  template:
+    metadata:
+      labels:
+        app: cs122b-project-login
+    spec:
+      containers:
+        - name: cs122b-project-login-container
+          image: shiandrew/cs122b-project-login:v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cs122b-project-login-service
+spec:
+  selector:
+    app: cs122b-project-login
+  ports:
+    - name: http
+      port: 8080
+  type: ClusterIP
