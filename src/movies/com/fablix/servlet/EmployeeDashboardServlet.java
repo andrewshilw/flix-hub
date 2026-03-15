@@ -2,13 +2,15 @@ package com.fablix.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
+
 import java.io.IOException;
+import java.time.Instant;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,22 +25,23 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        boolean loggedIn = session != null && session.getAttribute("employeeEmail") != null;
+        RedisSession session = RedisSessionManager.loadSession(request);
+        boolean loggedIn = session != null && session.getEmployeeEmail() != null;
 
         request.setAttribute("employeeLoggedIn", loggedIn);
         if (loggedIn) {
-            request.setAttribute("employeeEmail", session.getAttribute("employeeEmail"));
-            request.setAttribute("employeeName", session.getAttribute("employeeName"));
+            request.setAttribute("employeeEmail", session.getEmployeeEmail());
+            request.setAttribute("employeeName", session.getEmployeeName());
             request.setAttribute("metadataRows", loadMetadata());
+            RedisSessionManager.saveSession(request, response, session);
         }
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(true);
-        boolean loggedIn = session.getAttribute("employeeEmail") != null;
+        RedisSession session = RedisSessionManager.getOrCreateSession(request, response);
+        boolean loggedIn = session.getEmployeeEmail() != null;
 
         if (!loggedIn) {
             handleLogin(request, response, session);
@@ -47,8 +50,10 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
 
         String action = request.getParameter("action");
         if ("logout".equals(action)) {
-            session.removeAttribute("employeeEmail");
-            session.removeAttribute("employeeName");
+            session.setEmployeeEmail(null);
+            session.setEmployeeName(null);
+            session.setEmployeeLoginTime(null);
+            RedisSessionManager.saveSession(request, response, session);
             response.sendRedirect(request.getContextPath() + "/_dashboard");
             return;
         }
@@ -62,13 +67,14 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
         }
 
         request.setAttribute("employeeLoggedIn", true);
-        request.setAttribute("employeeEmail", session.getAttribute("employeeEmail"));
-        request.setAttribute("employeeName", session.getAttribute("employeeName"));
+        request.setAttribute("employeeEmail", session.getEmployeeEmail());
+        request.setAttribute("employeeName", session.getEmployeeName());
         request.setAttribute("metadataRows", loadMetadata());
+        RedisSessionManager.saveSession(request, response, session);
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
-    private void handleLogin(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+    private void handleLogin(HttpServletRequest request, HttpServletResponse response, RedisSession session)
             throws ServletException, IOException {
         String email = trimToNull(request.getParameter("email"));
         String password = request.getParameter("password");
@@ -89,8 +95,10 @@ public class EmployeeDashboardServlet extends DatabaseServlet {
                 return;
             }
 
-            session.setAttribute("employeeEmail", email);
-            session.setAttribute("employeeName", employeeAuth.fullName);
+            session.setEmployeeEmail(email);
+            session.setEmployeeName(employeeAuth.fullName);
+            session.setEmployeeLoginTime(Instant.now().toString());
+            RedisSessionManager.saveSession(request, response, session);
             response.sendRedirect(request.getContextPath() + "/_dashboard");
         } catch (Exception e) {
             throw new ServletException(e);

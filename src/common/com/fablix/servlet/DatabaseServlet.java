@@ -1,5 +1,6 @@
 package com.fablix.servlet;
 
+import com.fablix.util.RedisSessionManager;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.UnavailableException;
@@ -26,6 +27,7 @@ public abstract class DatabaseServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         try {
+            RedisSessionManager.init();
             InitialContext context = new InitialContext();
             masterDataSource = lookupDataSource(context, MASTER_JNDI);
             readDataSources = new DataSource[]{

@@ -1,10 +1,11 @@
 package com.fablix.servlet;
 
 import com.fablix.model.Movie;
+import com.fablix.util.RedisSession;
+import com.fablix.util.RedisSessionManager;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.sql.*;
@@ -223,13 +224,18 @@ public class MovieListServlet extends DatabaseServlet {
 
         request.setAttribute(SearchTimingFilter.JDBC_TIME_ATTRIBUTE, jdbcElapsedTime);
 
-        HttpSession session = request.getSession();
+        RedisSession session = RedisSessionManager.getOrCreateSession(request, response);
         String queryString = request.getQueryString();
         String listUrl = request.getContextPath() + "/movie-list";
         if (queryString != null && !queryString.isBlank()) {
             listUrl += "?" + queryString;
         }
-        session.setAttribute("lastMovieListUrl", listUrl);
+        session.setLastMovieListUrl(listUrl);
+        request.setAttribute("cartMessage", session.getCartMessage());
+        request.setAttribute("cartMessageType", session.getCartMessageType());
+        session.setCartMessage(null);
+        session.setCartMessageType(null);
+        RedisSessionManager.saveSession(request, response, session);
 
         // Pass the list to the JSP
         request.setAttribute("movieList", movieList);

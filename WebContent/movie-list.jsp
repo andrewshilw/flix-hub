@@ -41,12 +41,8 @@
     if (pageSize == null) pageSize = 10;
     if (totalCount == null) totalCount = 0;
     int totalPages = (int) Math.ceil(totalCount / (double) pageSize);
-    String cartMessage = (String) session.getAttribute("cartMessage");
-    String cartMessageType = (String) session.getAttribute("cartMessageType");
-    if (cartMessage != null) {
-        session.removeAttribute("cartMessage");
-        session.removeAttribute("cartMessageType");
-    }
+    String cartMessage = (String) request.getAttribute("cartMessage");
+    String cartMessageType = (String) request.getAttribute("cartMessageType");
 %>
 <% if (cartMessage != null) { %>
 <p style="color:<%= "error".equals(cartMessageType) ? "red" : "green" %>;"><%= cartMessage %></p>

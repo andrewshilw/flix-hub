@@ -16,12 +16,8 @@
 <a href="<%= request.getContextPath() %>/">Home</a>
 <br>
 <%
-    String cartMessage = (String) session.getAttribute("cartMessage");
-    String cartMessageType = (String) session.getAttribute("cartMessageType");
-    if (cartMessage != null) {
-        session.removeAttribute("cartMessage");
-        session.removeAttribute("cartMessageType");
-    }
+    String cartMessage = (String) request.getAttribute("cartMessage");
+    String cartMessageType = (String) request.getAttribute("cartMessageType");
 %>
 <% if (cartMessage != null) { %>
 <p style="color:<%= "error".equals(cartMessageType) ? "red" : "green" %>;"><%= cartMessage %></p>

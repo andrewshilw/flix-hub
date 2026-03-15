@@ -44,11 +44,23 @@
       <version>6.0.0</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>5.1.0</version>
+    </dependency>
   </dependencies>
 
   <build>
     <finalName>cs122b-project</finalName>
-    <sourceDirectory>src</sourceDirectory>
+    <sourceDirectory>${endpointDir}</sourceDirectory>
 
     <plugins>
       <plugin>
@@ -65,8 +77,73 @@
         <version>3.3.2</version>
         <configuration>
           <warSourceDirectory>WebContent</warSourceDirectory>
+          <warSourceExcludes>${excludes}</warSourceExcludes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>add-common-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/common</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-extra-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${extraSourceDir}</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>login</id>
+      <properties>
+        <endpointDir>src/login</endpointDir>
+        <extraSourceDir>src/none</extraSourceDir>
+        <excludes>confirmation.jsp, dashboard.jsp, index.jsp, movie-list.jsp, payment.jsp, shopping-cart.jsp, single-movie.jsp, single-star.jsp, js/**, log_processing.py</excludes>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>movies</id>
+      <properties>
+        <endpointDir>src/movies</endpointDir>
+        <extraSourceDir>src/none</extraSourceDir>
+        <excludes>login.jsp</excludes>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <endpointDir>src/movies</endpointDir>
+        <extraSourceDir>src/login</extraSourceDir>
+        <excludes></excludes>
+      </properties>
+    </profile>
+  </profiles>
 </project>

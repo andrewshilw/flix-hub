@@ -26,10 +26,14 @@
 
 <%
     Star star = (Star) request.getAttribute("star");
+    Long accessCount = (Long) request.getAttribute("accessCount");
     if (star != null) {
 %>
 <h1><%= star.getName() %></h1>
 <p><strong>Date of Birth:</strong> <%= (star.getBirthYear() != 0) ? star.getBirthYear() : "N/A" %></p>
+<% if (accessCount != null) { %>
+<p><strong>Shared movies-service access count:</strong> <%= accessCount %></p>
+<% } %>
 
 <h3>Movies Acted In</h3>
 <ul>
