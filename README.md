@@ -1,21 +1,12 @@
 # Flix Hub
 
-Flix Hub (internally named **Fabflix**) is a full-stack movie database web application. Users can browse and search movies, view cast/star details, add titles to a shopping cart, and place orders, while employees get a dashboard to manage the movie catalog. It was built incrementally across five milestones for UCI's CS 122B (Database Management Systems) course.
+Flix Hub is a full-stack movie database web application. Users can browse and search movies, view cast/star details, add titles to a shopping cart, and place orders, while employees get a dashboard to manage the movie catalog. It was built incrementally across five milestones for UCI's CS 122B (Database Management Systems) course.
 
 ## Tech Stack
 - **Backend:** Java Servlets (Jakarta EE) on Apache Tomcat, built with Maven
 - **Frontend:** JSP, JavaScript
 - **Database:** MySQL, with master/replica read-write splitting and Tomcat JDBC connection pooling
 - **Deployment:** Docker, Kubernetes (split into `login` and `movies` services behind an ingress)
-
-## Demo Videos
-| Project | Link |
-|---|---|
-| Project 1 | https://drive.google.com/file/d/1Xu-MGIgYv1Lb4EyGZ_3DIY7em0WsBUcZ/view?usp=sharing |
-| Project 2 | https://drive.google.com/file/d/1oZt3azQpJqjajToQRAIQBIDSFnS2SACq/view?usp=sharing |
-| Project 3 | https://drive.google.com/file/d/1moS-igocPlDNaQBWmFUbn4yY8GWbHBJq/view?usp=sharing |
-| Project 4 | https://drive.google.com/file/d/1IuvNFinqBAzkDlGQsSWrQPNC-rL9bM4M/view?usp=drive_link |
-| Project 5 | https://drive.google.com/file/d/1N7QZzA1rMIuWm-xifGVOHzG7kPXaY1Ce/view?usp=sharing |
 
 ## Project Details
 
@@ -411,7 +402,9 @@ python WebContent/log_processing.py /path/to/search-timing.log
 
 </details>
 
-## Project 5
+<details>
+<summary>Project 5</summary>
+
 - Demo video: https://drive.google.com/file/d/1N7QZzA1rMIuWm-xifGVOHzG7kPXaY1Ce/view?usp=sharing
 - Member: Andrew Shi (full contribution)
 
@@ -435,3 +428,5 @@ python WebContent/log_processing.py /path/to/search-timing.log
   - `/shopping-cart`
   - `/payment`
   - `/place-order`
+
+</details>
